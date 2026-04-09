@@ -84,17 +84,15 @@ main{max-width:900px;margin:0 auto;padding:32px 24px 80px;width:100%;}
 footer{background:var(--navy);border-top:3px solid var(--gold);padding:16px 36px;display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
 .fli{height:22px;background:#fff;border-radius:4px;padding:2px 6px;}
 .ft2{font-size:11px;color:rgba(255,255,255,.3);line-height:1.7;text-align:right;}
-@media(max-width:640px){.ht,.hero{padding-left:16px;padding-right:16px;}.hero h1{font-size:22px;}main{padding:24px 14px 60px;}.sr{flex-direction:column;}footer{flex-direction:column;gap:10px;}.ft2{text-align:center;}}
-
 .ai-section{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:12px;padding:28px;margin-bottom:28px;border:1px solid rgba(200,168,75,.25);}
-.ai-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.ai-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--gold2);margin-bottom:6px;}
 .ai-desc{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px;}
-.ai-input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(200,168,75,.3);border-radius:var(--r);padding:14px 16px;color:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;resize:vertical;min-height:80px;}
+.ai-input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(200,168,75,.3);border-radius:var(--r);padding:14px 16px;color:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;resize:vertical;min-height:80px;box-sizing:border-box;}
 .ai-input::placeholder{color:rgba(255,255,255,.3);}
 .ai-input:focus{border-color:var(--gold);}
-.ai-btn{margin-top:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--r);padding:11px 24px;color:var(--navy);font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;}
+.ai-btn{margin-top:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--r);padding:12px 24px;color:var(--navy);font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;width:100%;}
 .ai-btn:disabled{opacity:.5;cursor:not-allowed;}
-.ai-result{margin-top:18px;display:none;}
+.ai-result{margin-top:18px;}
 .ai-box{background:rgba(255,255,255,.06);border:1px solid rgba(200,168,75,.2);border-radius:var(--r);padding:16px;margin-bottom:10px;}
 .ai-box-title{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(200,168,75,.2);}
 .ai-box-content{font-size:13px;color:rgba(255,255,255,.8);line-height:1.8;}
@@ -107,6 +105,7 @@ footer{background:var(--navy);border-top:3px solid var(--gold);padding:16px 36px
 .ai-list li{padding:5px 0;font-size:13px;color:rgba(255,255,255,.8);padding-left:16px;position:relative;}
 .ai-list li::before{content:'•';position:absolute;left:0;color:var(--gold);}
 .ai-loading{text-align:center;padding:24px;color:rgba(255,255,255,.5);font-size:13px;}
+@media(max-width:640px){.ht,.hero{padding-left:16px;padding-right:16px;}.hero h1{font-size:22px;}main{padding:24px 14px 60px;}.sr{flex-direction:column;}footer{flex-direction:column;gap:10px;}.ft2{text-align:center;}}
 </style>
 </head>
 <body>
@@ -147,15 +146,14 @@ footer{background:var(--navy);border-top:3px solid var(--gold);padding:16px 36px
   </div>
 </div>
 <main>
-  
   <div class="ai-section">
-    <div class="ai-title">&#x1F916; AI 현장 상황 분석</div>
+    <div class="ai-title">AI 현장 상황 분석</div>
     <div class="ai-desc">건설 현장에서 발생한 상황을 입력하면 관련 법령, 즉각 대처방법, 재발 방지 대책을 분석해드립니다.</div>
     <textarea class="ai-input" id="ai-input" placeholder="예: 3층 외벽 작업 중 작업자가 안전벨트 미착용 상태에서 추락하여 골절상을 입었습니다. 안전망은 설치되어 있지 않았습니다."></textarea>
-    <button class="ai-btn" id="ai-btn" onclick="doAnalyze()">&#x1F50D; AI 법률 분석 시작</button>
+    <button class="ai-btn" id="ai-btn">AI 법률 분석 시작</button>
     <div class="ai-result" id="ai-result"></div>
   </div>
-<div class="sec">
+  <div class="sec">
     <div class="slb">건설 안전 주요 법령</div>
     <div class="tgs" id="law-tags"></div>
   </div>
@@ -170,341 +168,314 @@ footer{background:var(--navy);border-top:3px solid var(--gold);padding:16px 36px
   <div class="ft2">(주)사닥다리종합건설 사내 전용 시스템 대외비<br>데이터: 법제처 국가법령정보센터 참고용이며 법적 효력 없음</div>
 </footer>
 <script>
-(function() {
-  var TAB = 'all';
-  var RES = [];
-  var OI = -1;
+var TAB = 'all';
+var RES = [];
+var OI = -1;
 
-  function p(n) { return String(n).padStart(2,'0'); }
-  function fd(d) {
-    if (!d) return '-';
-    var s = String(d);
-    return s.length === 8 ? s.slice(0,4)+'.'+s.slice(4,6)+'.'+s.slice(6,8) : d;
-  }
-  function isSafe(t) { return /안전|중대재해|산업재해|추락|붕괴|폭발|화재|재해/.test(t); }
+function p(n) { return String(n).padStart(2,'0'); }
+function fd(d) {
+  if (!d) return '-';
+  var s = String(d);
+  return s.length === 8 ? s.slice(0,4)+'.'+s.slice(4,6)+'.'+s.slice(6,8) : d;
+}
+function isSafe(t) { return /안전|중대재해|산업재해|추락|붕괴|폭발|화재|재해/.test(t); }
 
-  var d = new Date();
-  var hdEl = document.getElementById('hd');
-  if (hdEl) hdEl.textContent = d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' KST';
+// 날짜
+var dn = new Date();
+var hdEl = document.getElementById('hd');
+if (hdEl) hdEl.textContent = dn.getFullYear()+'.'+p(dn.getMonth()+1)+'.'+p(dn.getDate())+' KST';
 
-  var lawTags = [
-    {label:'중대재해처벌법', hot:true},
-    {label:'산업안전보건법', hot:true},
-    {label:'건설기술진흥법', hot:false},
-    {label:'건설산업기본법', hot:false},
-    {label:'건축법', hot:false},
-    {label:'산업재해보상보험법', hot:false}
-  ];
-  var precTags = [
-    {label:'추락사고', hot:true},
-    {label:'안전관리자 의무', hot:false},
-    {label:'건설 하자보수', hot:false},
-    {label:'건설공사 도급', hot:false},
-    {label:'중대재해 처벌', hot:false},
-    {label:'건설현장 화재', hot:false}
-  ];
+// 빠른 태그
+var lawTags = [
+  {label:'중대재해처벌법',hot:true},{label:'산업안전보건법',hot:true},
+  {label:'건설기술진흥법',hot:false},{label:'건설산업기본법',hot:false},
+  {label:'건축법',hot:false},{label:'산업재해보상보험법',hot:false}
+];
+var precTags = [
+  {label:'추락사고',hot:true},{label:'안전관리자 의무',hot:false},
+  {label:'건설 하자보수',hot:false},{label:'건설공사 도급',hot:false},
+  {label:'중대재해 처벌',hot:false},{label:'건설현장 화재',hot:false}
+];
 
-  var ltEl = document.getElementById('law-tags');
-  if (ltEl) lawTags.forEach(function(t) {
-    var el = document.createElement('span');
-    el.className = 'tg' + (t.hot ? ' hot' : '');
-    el.textContent = t.label;
-    el.onclick = function() { ql(t.label); };
-    ltEl.appendChild(el);
-  });
+var ltEl = document.getElementById('law-tags');
+if (ltEl) lawTags.forEach(function(t) {
+  var el = document.createElement('span');
+  el.className = 'tg'+(t.hot?' hot':'');
+  el.textContent = t.label;
+  el.onclick = function() { ql(t.label); };
+  ltEl.appendChild(el);
+});
 
-  var ptEl = document.getElementById('prec-tags');
-  if (ptEl) precTags.forEach(function(t) {
-    var el = document.createElement('span');
-    el.className = 'tg' + (t.hot ? ' hot' : '');
-    el.textContent = t.label;
-    el.onclick = function() { qp(t.label); };
-    ptEl.appendChild(el);
-  });
+var ptEl = document.getElementById('prec-tags');
+if (ptEl) precTags.forEach(function(t) {
+  var el = document.createElement('span');
+  el.className = 'tg'+(t.hot?' hot':'');
+  el.textContent = t.label;
+  el.onclick = function() { qp(t.label); };
+  ptEl.appendChild(el);
+});
 
-  var sgnEl = document.getElementById('sgn');
-  var qEl = document.getElementById('q');
+// 탭
+['all','law','prec','safe'].forEach(function(id) {
+  var el = document.getElementById('tab-'+id);
+  if (el) el.onclick = function() {
+    document.querySelectorAll('.ftb').forEach(function(b) { b.classList.remove('on'); });
+    el.classList.add('on');
+    TAB = id;
+  };
+});
 
-  ['all','law','prec','safe'].forEach(function(id) {
-    var el = document.getElementById('tab-'+id);
-    if (el) el.onclick = function() {
-      document.querySelectorAll('.ftb').forEach(function(b) { b.classList.remove('on'); });
-      el.classList.add('on');
-      TAB = id;
-    };
-  });
+// 검색 버튼 - 직접 이벤트 연결
+var sgnEl = document.getElementById('sgn');
+var qEl = document.getElementById('q');
+if (sgnEl) {
+  sgnEl.addEventListener('click', function() { go(); });
+}
+if (qEl) {
+  qEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') go(); });
+}
 
-  if (sgnEl) sgnEl.onclick = function() { go(); };
-  if (qEl) qEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') go(); });
+// AI 분석 버튼 - 직접 이벤트 연결
+var aiBtnEl = document.getElementById('ai-btn');
+if (aiBtnEl) {
+  aiBtnEl.addEventListener('click', function() { doAnalyze(); });
+}
 
-  function ql(q) {
-    qEl.value = q;
-    document.querySelectorAll('.ftb').forEach(function(b,i) { b.classList.toggle('on', i===1); });
-    TAB = 'law';
-    go();
-  }
+function ql(q) {
+  qEl.value = q;
+  document.querySelectorAll('.ftb').forEach(function(b,i) { b.classList.toggle('on', i===1); });
+  TAB = 'law';
+  go();
+}
 
-  function qp(q) {
-    qEl.value = q;
-    document.querySelectorAll('.ftb').forEach(function(b,i) { b.classList.toggle('on', i===2); });
-    TAB = 'prec';
-    go();
-  }
+function qp(q) {
+  qEl.value = q;
+  document.querySelectorAll('.ftb').forEach(function(b,i) { b.classList.toggle('on', i===2); });
+  TAB = 'prec';
+  go();
+}
 
-  function go() {
-    var q = qEl.value.trim();
-    if (!q) return;
-    setLd();
-    RES = [];
-    OI = -1;
-    var dl = TAB==='all'||TAB==='law'||TAB==='safe';
-    var dp = TAB==='all'||TAB==='prec'||TAB==='safe';
-    var sq = (TAB==='safe' && !/안전|중대재해/.test(q)) ? q+' 안전' : q;
+function go() {
+  var q = qEl.value.trim();
+  if (!q) return;
+  setLd();
+  RES = []; OI = -1;
+  var dl = TAB==='all'||TAB==='law'||TAB==='safe';
+  var dp = TAB==='all'||TAB==='prec'||TAB==='safe';
+  var sq = (TAB==='safe' && !/안전|중대재해/.test(q)) ? q+' 안전' : q;
 
-    Promise.all([
-      dl ? callAPI('law', sq) : Promise.resolve([]),
-      dp ? callAPI('prec', sq) : Promise.resolve([])
-    ]).then(function(results) {
-      RES = results[0].concat(results[1]);
-      render(q);
-    }).catch(function(e) {
-      showErr(e.message);
-    });
-  }
+  Promise.all([
+    dl ? callAPI('law', sq) : Promise.resolve([]),
+    dp ? callAPI('prec', sq) : Promise.resolve([])
+  ]).then(function(results) {
+    RES = results[0].concat(results[1]);
+    render(q);
+  }).catch(function(e) { showErr(e.message); });
+}
 
-  function callAPI(target, query) {
-    return fetch('/api/law?target='+target+'&query='+encodeURIComponent(query))
-      .then(function(res) {
-        if (!res.ok) throw new Error('서버 오류 ' + res.status);
-        return res.text();
-      }).then(function(txt) {
-        return parseTxt(txt, target);
+function callAPI(target, query) {
+  return fetch('/api/law?target='+target+'&query='+encodeURIComponent(query))
+    .then(function(res) {
+      if (!res.ok) throw new Error('서버 오류 ' + res.status);
+      return res.text();
+    }).then(function(txt) { return parseTxt(txt, target); });
+}
+
+function callDetail(mst, id) {
+  var param = mst ? 'mst='+mst : 'id='+id;
+  return fetch('/api/law?'+param)
+    .then(function(res) { return res.ok ? res.json() : null; })
+    .catch(function() { return null; });
+}
+
+function parseTxt(txt, target) {
+  try {
+    var b = JSON.parse(txt);
+    if (target === 'law') {
+      var arr = (b && b.LawSearch && b.LawSearch.law) ? b.LawSearch.law : [];
+      if (!Array.isArray(arr)) arr = [arr];
+      return arr.filter(Boolean).map(function(i) {
+        return {
+          type:'law', title:i['법령명한글']||'법령명 없음',
+          ministry:i['소관부처명']||'', date:i['시행일자']||'',
+          promDate:i['공포일자']||'', mst:i['법령일련번호']||'', no:i['공포번호']||'',
+          preview:'소관부처: '+(i['소관부처명']||'-')+' | 시행일: '+fd(i['시행일자'])
+        };
       });
-  }
+    } else {
+      var arr2 = (b && b.PrecSearch && b.PrecSearch.prec) ? b.PrecSearch.prec : [];
+      if (!Array.isArray(arr2)) arr2 = [arr2];
+      return arr2.filter(Boolean).map(function(i) {
+        return {
+          type:'prec', title:i['사건명']||i['사건번호']||'판례',
+          court:i['법원명']||'', date:i['선고일자']||'',
+          caseNo:i['사건번호']||'', verdict:i['선고']||'', seq:i['판례일련번호']||'',
+          preview:i['판시사항']||i['판결요지']||''
+        };
+      });
+    }
+  } catch(e) { return []; }
+}
 
-  function callDetail(mst, id) {
-    var param = mst ? 'mst='+mst : 'id='+id;
-    return fetch('/api/law?'+param)
-      .then(function(res) { return res.ok ? res.json() : null; })
-      .catch(function() { return null; });
+function render(q) {
+  var a = document.getElementById('area');
+  if (!RES.length) {
+    a.innerHTML = '<div class="em"><div class="ei">검색</div><h3>검색 결과가 없습니다</h3><p>다른 키워드로 검색해보세요.</p></div>';
+    return;
   }
+  var html = '<div class="rm"><div class="rc"><strong>'+q+'</strong> 검색 결과 <strong>'+RES.length+'건</strong></div><button class="rcl" id="clearBtn">초기화</button></div>';
+  RES.forEach(function(it, i) {
+    html += '<div class="card" data-idx="'+i+'">';
+    html += '<div class="ch"><div class="ct">'+it.title+'</div>';
+    html += '<div class="bdg">';
+    html += it.type==='law' ? '<span class="bd blaw">법령</span>' : '<span class="bd bpre">판례</span>';
+    if (isSafe(it.title)) html += '<span class="bd bsaf">안전</span>';
+    html += '</div></div>';
+    html += '<div class="cm">';
+    if (it.court) html += '<span>'+it.court+'</span>';
+    if (it.ministry) html += '<span>'+it.ministry+'</span>';
+    if (it.date) html += '<span>'+fd(it.date)+'</span>';
+    if (it.caseNo) html += '<span>'+it.caseNo+'</span>';
+    if (it.verdict) html += '<span>'+it.verdict+'</span>';
+    html += '</div>';
+    if (it.preview) html += '<div class="cp">'+it.preview+'</div>';
+    html += '</div><div id="d'+i+'" style="display:none"></div>';
+  });
+  a.innerHTML = html;
+  var cb = document.getElementById('clearBtn');
+  if (cb) cb.onclick = function() { a.innerHTML=''; RES=[]; };
+  a.querySelectorAll('.card').forEach(function(el) {
+    el.onclick = function() { tog(parseInt(el.getAttribute('data-idx'))); };
+  });
+}
 
-  function parseTxt(txt, target) {
-    try {
-      var b = JSON.parse(txt);
-      if (target === 'law') {
-        var arr = (b && b.LawSearch && b.LawSearch.law) ? b.LawSearch.law : [];
-        if (!Array.isArray(arr)) arr = [arr];
-        return arr.filter(Boolean).map(function(i) {
-          return {
-            type:'law', title:i['법령명한글']||'법령명 없음',
-            ministry:i['소관부처명']||'', date:i['시행일자']||'',
-            promDate:i['공포일자']||'', mst:i['법령일련번호']||'', no:i['공포번호']||'',
-            preview:'소관부처: '+(i['소관부처명']||'-')+' | 시행일: '+fd(i['시행일자'])+' | 공포번호: '+(i['공포번호']||'-')
-          };
+function tog(i) {
+  var box = document.getElementById('d'+i);
+  if (!box) return;
+  if (box.style.display !== 'none') { box.style.display='none'; return; }
+  if (OI >= 0 && OI !== i) {
+    var prev = document.getElementById('d'+OI);
+    if (prev) prev.style.display='none';
+  }
+  OI = i;
+  box.innerHTML = '<div class="ld" style="padding:24px"><div class="sp"></div><p>불러오는 중...</p></div>';
+  box.style.display = 'block';
+  var it = RES[i];
+  callDetail(it.type==='law'?it.mst:null, it.type==='prec'?it.seq:null).then(function(d) {
+    var html = '';
+    if (it.type==='law' && it.mst) {
+      var lD = d ? (d['법령']||d['law']||{}) : {};
+      var arts = lD['조문'] ? (Array.isArray(lD['조문'])?lD['조문']:[lD['조문']]) : [];
+      html = '<div class="dp"><div class="dph"><div class="dpt">'+it.title+'</div>';
+      html += '<button class="dpx" data-close="'+i+'">X</button></div><div class="dpb">';
+      html += '<div class="dps2"><div class="dpl">법령 기본 정보</div>';
+      html += '<div class="dpc">소관부처: '+(it.ministry||'-')+'&#10;시행일: '+fd(it.date)+'&#10;공포번호: '+(it.no||'-')+'</div></div>';
+      if (arts.length) {
+        html += '<div class="dps2"><div class="dpl">주요 조문</div><div class="dpc">';
+        arts.slice(0,5).forEach(function(a) {
+          html += '['+( a['조문번호']||'')+'] '+(a['조문제목']||'')+'&#10;'+(a['조문내용']||'')+'&#10;&#10;';
         });
-      } else {
-        var arr2 = (b && b.PrecSearch && b.PrecSearch.prec) ? b.PrecSearch.prec : [];
-        if (!Array.isArray(arr2)) arr2 = [arr2];
-        return arr2.filter(Boolean).map(function(i) {
-          return {
-            type:'prec', title:i['사건명']||i['사건번호']||'판례',
-            court:i['법원명']||'', date:i['선고일자']||'',
-            caseNo:i['사건번호']||'', verdict:i['선고']||'', seq:i['판례일련번호']||'',
-            preview:i['판시사항']||i['판결요지']||''
-          };
-        });
+        html += '</div></div>';
       }
-    } catch(e) { return []; }
-  }
+      html += '<a class="dlk" href="https://www.law.go.kr/lsInfoP.do?lsiSeq='+it.mst+'" target="_blank">법제처 원문 보기</a>';
+      html += '</div></div>';
+    } else if (it.type==='prec' && it.seq) {
+      var pr = d ? (d['PrecService']||d||{}) : {};
+      html = '<div class="dp"><div class="dph"><div class="dpt">'+it.title+'</div>';
+      html += '<button class="dpx" data-close="'+i+'">X</button></div><div class="dpb">';
+      html += '<div class="dps2"><div class="dpl">사건 정보</div>';
+      html += '<div class="dpc">법원: '+(it.court||'-')+'&#10;사건번호: '+(it.caseNo||'-')+'&#10;선고일: '+fd(it.date)+'</div></div>';
+      if (pr['판시사항']) html += '<div class="dps2"><div class="dpl">판시사항</div><div class="dpc">'+pr['판시사항']+'</div></div>';
+      if (pr['판결요지']||it.preview) html += '<div class="dps2"><div class="dpl">판결요지</div><div class="dpc">'+(pr['판결요지']||it.preview)+'</div></div>';
+      html += '<a class="dlk" href="https://www.law.go.kr/precInfoP.do?precSeq='+it.seq+'" target="_blank">판례 원문 보기</a>';
+      html += '</div></div>';
+    }
+    box.innerHTML = html;
+    var cb2 = box.querySelector('[data-close]');
+    if (cb2) cb2.onclick = function() { box.style.display='none'; };
+  });
+}
 
-  function render(q) {
-    var a = document.getElementById('area');
-    if (!RES.length) {
-      a.innerHTML = '<div class="em"><div class="ei">검색</div><h3>검색 결과가 없습니다</h3><p>'+q+'에 대한 결과를 찾지 못했습니다.</p></div>';
+function setLd() {
+  if (sgnEl) { sgnEl.disabled=true; sgnEl.textContent='검색중...'; }
+  document.getElementById('area').innerHTML = '<div class="ld"><div class="sp"></div><p>법제처에서 데이터를 불러오는 중...</p></div>';
+  setTimeout(function() { if(sgnEl){sgnEl.disabled=false;sgnEl.textContent='검색';} }, 15000);
+}
+
+function showErr(m) {
+  if (sgnEl) { sgnEl.disabled=false; sgnEl.textContent='검색'; }
+  document.getElementById('area').innerHTML = '<div class="err">오류: '+m+'</div>';
+}
+
+// AI 분석
+function doAnalyze() {
+  var situation = document.getElementById('ai-input').value.trim();
+  if (!situation) { alert('상황을 입력해주세요.'); return; }
+
+  var btn = document.getElementById('ai-btn');
+  var result = document.getElementById('ai-result');
+
+  btn.disabled = true;
+  btn.textContent = 'AI 분석 중...';
+  result.innerHTML = '<div class="ai-loading"><div class="sp" style="margin:0 auto 10px;border-top-color:var(--gold)"></div>AI가 상황을 분석하고 있습니다...</div>';
+
+  fetch('/api/analyze', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({situation: situation})
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.textContent = 'AI 법률 분석 시작';
+    if (!data.success || !data.result) {
+      result.innerHTML = '<div class="ai-box"><div class="ai-box-content" style="color:#ff6b6b;">분석 실패: '+(data.error||'오류')+'</div></div>';
       return;
     }
-    var html = '<div class="rm"><div class="rc"><strong>'+q+'</strong> 검색 결과 <strong>'+RES.length+'건</strong></div><button class="rcl" id="clearBtn">초기화</button></div>';
-    RES.forEach(function(it, i) {
-      html += '<div class="card" data-idx="'+i+'">';
-      html += '<div class="ch"><div class="ct">'+it.title+'</div>';
-      html += '<div class="bdg">';
-      html += it.type==='law' ? '<span class="bd blaw">법령</span>' : '<span class="bd bpre">판례</span>';
-      if (isSafe(it.title)) html += '<span class="bd bsaf">안전</span>';
-      html += '</div></div>';
-      html += '<div class="cm">';
-      if (it.court) html += '<span>'+it.court+'</span>';
-      if (it.ministry) html += '<span>'+it.ministry+'</span>';
-      if (it.date) html += '<span>'+fd(it.date)+'</span>';
-      if (it.caseNo) html += '<span>'+it.caseNo+'</span>';
-      if (it.verdict) html += '<span>'+it.verdict+'</span>';
-      html += '</div>';
-      if (it.preview) html += '<div class="cp">'+it.preview+'</div>';
-      html += '</div><div id="d'+i+'" style="display:none"></div>';
-    });
-    a.innerHTML = html;
-    var cb = document.getElementById('clearBtn');
-    if (cb) cb.onclick = function() { a.innerHTML = ''; RES = []; };
-    a.querySelectorAll('.card').forEach(function(el) {
-      el.onclick = function() { tog(parseInt(el.getAttribute('data-idx'))); };
-    });
-  }
+    var r = data.result;
+    var sevClass = {'낮음':'sev-low','중간':'sev-mid','높음':'sev-high','매우높음':'sev-very-high'}[r.severity]||'sev-mid';
+    var html = '';
 
-  function tog(i) {
-    var box = document.getElementById('d'+i);
-    if (!box) return;
-    if (box.style.display !== 'none') { box.style.display='none'; return; }
-    if (OI >= 0 && OI !== i) {
-      var prev = document.getElementById('d'+OI);
-      if (prev) prev.style.display = 'none';
+    html += '<div class="ai-box"><div class="ai-box-title">상황 분석</div>';
+    html += '<span class="ai-severity '+sevClass+'">심각도: '+(r.severity||'-')+'</span>';
+    html += '<div class="ai-box-content">'+(r.summary||'-')+'</div></div>';
+
+    if (r.immediate_actions && r.immediate_actions.length) {
+      html += '<div class="ai-box"><div class="ai-box-title">즉각 대처방법</div><ul class="ai-list">';
+      r.immediate_actions.forEach(function(a) { html += '<li>'+a+'</li>'; });
+      html += '</ul></div>';
     }
-    OI = i;
-    box.innerHTML = '<div class="ld" style="padding:24px"><div class="sp"></div><p>불러오는 중...</p></div>';
-    box.style.display = 'block';
-    var it = RES[i];
-    callDetail(it.type==='law' ? it.mst : null, it.type==='prec' ? it.seq : null).then(function(d) {
-      var html = '';
-      if (it.type === 'law' && it.mst) {
-        var lD = d ? (d['법령'] || d['law'] || {}) : {};
-        var arts = lD['조문'] ? (Array.isArray(lD['조문']) ? lD['조문'] : [lD['조문']]) : [];
-        html = '<div class="dp"><div class="dph"><div class="dpt">'+it.title+'</div>';
-        html += '<button class="dpx" data-close="'+i+'">X</button></div><div class="dpb">';
-        html += '<div class="dps2"><div class="dpl">법령 기본 정보</div>';
-        html += '<div class="dpc">소관부처: '+(it.ministry||'-')+'&#10;시행일: '+fd(it.date)+'&#10;공포번호: '+(it.no||'-')+'</div></div>';
-        if (arts.length) {
-          html += '<div class="dps2"><div class="dpl">주요 조문</div><div class="dpc">';
-          arts.slice(0,5).forEach(function(a) {
-            html += '['+( a['조문번호']||'')+'] '+(a['조문제목']||'')+'&#10;'+(a['조문내용']||'')+'&#10;&#10;';
-          });
-          html += '</div></div>';
-        }
-        html += '<a class="dlk" href="https://www.law.go.kr/lsInfoP.do?lsiSeq='+it.mst+'" target="_blank">법제처 원문 보기</a>';
-        html += '</div></div>';
-      } else if (it.type === 'prec' && it.seq) {
-        var pr = d ? (d['PrecService'] || d || {}) : {};
-        html = '<div class="dp"><div class="dph"><div class="dpt">'+it.title+'</div>';
-        html += '<button class="dpx" data-close="'+i+'">X</button></div><div class="dpb">';
-        html += '<div class="dps2"><div class="dpl">사건 정보</div>';
-        html += '<div class="dpc">법원: '+(it.court||'-')+'&#10;사건번호: '+(it.caseNo||'-')+'&#10;선고일: '+fd(it.date)+'</div></div>';
-        if (pr['판시사항']) html += '<div class="dps2"><div class="dpl">판시사항</div><div class="dpc">'+pr['판시사항']+'</div></div>';
-        if (pr['판결요지']||it.preview) html += '<div class="dps2"><div class="dpl">판결요지</div><div class="dpc">'+(pr['판결요지']||it.preview)+'</div></div>';
-        html += '<a class="dlk" href="https://www.law.go.kr/precInfoP.do?precSeq='+it.seq+'" target="_blank">판례 원문 보기</a>';
-        html += '</div></div>';
-      }
-      box.innerHTML = html;
-      var cb2 = box.querySelector('[data-close]');
-      if (cb2) cb2.onclick = function() { box.style.display='none'; };
-    });
-  }
-
-  function setLd() {
-    if (sgnEl) { sgnEl.disabled = true; sgnEl.textContent = '검색중...'; }
-    document.getElementById('area').innerHTML = '<div class="ld"><div class="sp"></div><p>법제처에서 데이터를 불러오는 중...</p></div>';
-    setTimeout(function() { if (sgnEl) { sgnEl.disabled=false; sgnEl.textContent='검색'; } }, 15000);
-  }
-
-  function showErr(m) {
-    if (sgnEl) { sgnEl.disabled = false; sgnEl.textContent = '검색'; }
-    document.getElementById('area').innerHTML = '<div class="err">오류: '+m+'</div>';
-  }
-
-  function doAnalyze() {
-    var situation = document.getElementById('ai-input').value.trim();
-    if (!situation) { alert('상황을 입력해주세요.'); return; }
-    
-    var btn = document.getElementById('ai-btn');
-    var result = document.getElementById('ai-result');
-    
-    btn.disabled = true;
-    btn.textContent = 'AI 분석 중...';
-    result.style.display = 'block';
-    result.innerHTML = '<div class="ai-loading"><div class="sp" style="margin:0 auto 10px"></div>AI가 상황을 분석하고 있습니다...</div>';
-    
-    fetch('/api/analyze', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({situation: situation})
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      btn.disabled = false;
-      btn.textContent = '&#x1F50D; AI 법률 분석 시작';
-      
-      if (!data.success || !data.result) {
-        result.innerHTML = '<div class="ai-box"><div class="ai-box-content" style="color:#ff6b6b;">분석 실패: ' + (data.error||'알 수 없는 오류') + '</div></div>';
-        return;
-      }
-      
-      var r = data.result;
-      var sevClass = {낮음:'sev-low', 중간:'sev-mid', 높음:'sev-high', 매우높음:'sev-very-high'}[r.severity] || 'sev-mid';
-      
-      var html = '';
-      
-      // 요약
-      html += '<div class="ai-box">';
-      html += '<div class="ai-box-title">상황 분석</div>';
-      html += '<span class="ai-severity ' + sevClass + '">심각도: ' + (r.severity||'-') + '</span>';
-      html += '<div class="ai-box-content">' + (r.summary||'-') + '</div>';
+    if (r.laws && r.laws.length) {
+      html += '<div class="ai-box"><div class="ai-box-title">관련 법령</div>';
+      r.laws.forEach(function(l) {
+        html += '<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)">';
+        html += '<div style="color:var(--gold2);font-size:13px;font-weight:600;">'+l.name+' '+(l.article||'')+'</div>';
+        html += '<div class="ai-box-content">'+l.content+'</div></div>';
+      });
       html += '</div>';
-      
-      // 즉각 대처방법
-      if (r.immediate_actions && r.immediate_actions.length) {
-        html += '<div class="ai-box">';
-        html += '<div class="ai-box-title">&#x1F6A8; 즉각 대처방법</div>';
-        html += '<ul class="ai-list">';
-        r.immediate_actions.forEach(function(a) { html += '<li>' + a + '</li>'; });
-        html += '</ul></div>';
-      }
-      
-      // 관련 법령
-      if (r.laws && r.laws.length) {
-        html += '<div class="ai-box">';
-        html += '<div class="ai-box-title">&#x1F4CB; 관련 법령</div>';
-        r.laws.forEach(function(l) {
-          html += '<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)">';
-          html += '<div style="color:var(--gold2);font-size:13px;font-weight:600;">' + l.name + ' ' + (l.article||'') + '</div>';
-          html += '<div class="ai-box-content">' + l.content + '</div>';
-          html += '</div>';
-        });
-        html += '</div>';
-      }
-      
-      // 사업주 의무
-      if (r.owner_obligations && r.owner_obligations.length) {
-        html += '<div class="ai-box">';
-        html += '<div class="ai-box-title">&#x1F4BC; 사업주 의무사항</div>';
-        html += '<ul class="ai-list">';
-        r.owner_obligations.forEach(function(o) { html += '<li>' + o + '</li>'; });
-        html += '</ul></div>';
-      }
-      
-      // 처벌
-      if (r.penalties) {
-        html += '<div class="ai-box">';
-        html += '<div class="ai-box-title">&#x26A0;&#xFE0F; 위반 시 처벌</div>';
-        html += '<div class="ai-box-content" style="color:#ff9f9f;">' + r.penalties + '</div>';
-        html += '</div>';
-      }
-      
-      // 재발 방지
-      if (r.prevention && r.prevention.length) {
-        html += '<div class="ai-box">';
-        html += '<div class="ai-box-title">&#x1F6E1;&#xFE0F; 재발 방지 대책</div>';
-        html += '<ul class="ai-list">';
-        r.prevention.forEach(function(p) { html += '<li>' + p + '</li>'; });
-        html += '</ul></div>';
-      }
-      
-      result.innerHTML = html;
-    })
-    .catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = '&#x1F50D; AI 법률 분석 시작';
-      result.innerHTML = '<div class="ai-box"><div class="ai-box-content" style="color:#ff6b6b;">오류: ' + e.message + '</div></div>';
-    });
-  }
-
-})();
+    }
+    if (r.owner_obligations && r.owner_obligations.length) {
+      html += '<div class="ai-box"><div class="ai-box-title">사업주 의무사항</div><ul class="ai-list">';
+      r.owner_obligations.forEach(function(o) { html += '<li>'+o+'</li>'; });
+      html += '</ul></div>';
+    }
+    if (r.penalties) {
+      html += '<div class="ai-box"><div class="ai-box-title">위반 시 처벌</div>';
+      html += '<div class="ai-box-content" style="color:#ff9f9f;">'+r.penalties+'</div></div>';
+    }
+    if (r.prevention && r.prevention.length) {
+      html += '<div class="ai-box"><div class="ai-box-title">재발 방지 대책</div><ul class="ai-list">';
+      r.prevention.forEach(function(p) { html += '<li>'+p+'</li>'; });
+      html += '</ul></div>';
+    }
+    result.innerHTML = html;
+  })
+  .catch(function(e) {
+    btn.disabled = false;
+    btn.textContent = 'AI 법률 분석 시작';
+    result.innerHTML = '<div class="ai-box"><div class="ai-box-content" style="color:#ff6b6b;">오류: '+e.message+'</div></div>';
+  });
+}
 </script>
 </body>
 </html>
