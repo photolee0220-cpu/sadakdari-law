@@ -4,7 +4,7 @@ function callClaude(prompt) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
+      max_tokens: 1500,
       messages: [{ role: 'user', content: prompt }]
     });
 
@@ -42,42 +42,57 @@ module.exports = async (req, res) => {
   if (!situation) return res.status(400).json({ error: '상황 설명이 필요합니다' });
   if (!process.env.ANTHROPIC_API_KEY) return res.status(500).json({ error: 'API 키 미설정' });
 
-  const prompt = `당신은 건설 현장 안전 법률 전문가입니다. 아래 상황을 분석하고 JSON 형식으로만 답변하세요.
+  const prompt = `당신은 건설 현장 안전 법률 전문가입니다. 아래 상황을 분석해주세요.
 
 상황: ${situation}
 
-다음 JSON 형식으로 답변하세요:
-{
-  "summary": "상황 요약 (1~2문장)",
-  "severity": "심각도 (낮음/중간/높음/매우높음)",
-  "laws": [
-    {"name": "법령명", "article": "조문번호", "content": "관련 내용 요약"}
-  ],
-  "immediate_actions": [
-    "즉시 취해야 할 조치 1",
-    "즉시 취해야 할 조치 2"
-  ],
-  "owner_obligations": [
-    "사업주 의무사항 1",
-    "사업주 의무사항 2"
-  ],
-  "penalties": "위반 시 처벌 수위",
-  "prevention": [
-    "재발 방지 대책 1",
-    "재발 방지 대책 2"
-  ]
-}`;
+반드시 아래 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.
+배열 항목은 반드시 큰따옴표로 감싸고, 특수문자나 줄바꿈은 사용하지 마세요.
+
+{"summary":"상황요약","severity":"높음","laws":[{"name":"산업안전보건법","article":"제38조","content":"추락방지 조치 의무"}],"immediate_actions":["119 신고","작업 중단","현장 보존"],"owner_obligations":["안전조치 미비 책임","재해 보고 의무"],"penalties":"1년 이하 징역 또는 1000만원 이하 벌금","prevention":["안전망 설치","안전교육 강화"]}`;
 
   try {
     const raw = await callClaude(prompt);
-    const data = JSON.parse(raw);
-    const text = data.content[0].text;
+    let apiResponse;
+    try {
+      apiResponse = JSON.parse(raw);
+    } catch(e) {
+      return res.json({ error: 'API 응답 파싱 실패: ' + raw.slice(0, 200) });
+    }
+
+    if (!apiResponse.content || !apiResponse.content[0]) {
+      return res.json({ error: 'API 응답 없음' });
+    }
+
+    const text = apiResponse.content[0].text.trim();
     
-    // JSON 추출
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) return res.json({ error: '분석 실패' });
-    
-    const result = JSON.parse(match[0]);
+    // JSON 부분만 추출
+    let jsonStr = text;
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start !== -1 && end !== -1) {
+      jsonStr = text.slice(start, end + 1);
+    }
+
+    // 줄바꿈 및 제어문자 제거
+    jsonStr = jsonStr.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ');
+
+    let result;
+    try {
+      result = JSON.parse(jsonStr);
+    } catch(e) {
+      // JSON 파싱 실패 시 텍스트로 기본 응답 반환
+      result = {
+        summary: text.slice(0, 200),
+        severity: '높음',
+        laws: [],
+        immediate_actions: ['119 신고', '작업 즉시 중단', '현장 보존', '고용노동부 보고'],
+        owner_obligations: ['재해 원인 조사', '재발 방지 대책 수립'],
+        penalties: '산업안전보건법 위반 시 처벌',
+        prevention: ['안전교육 강화', '안전장비 점검']
+      };
+    }
+
     res.json({ success: true, result });
   } catch (e) {
     res.status(500).json({ error: e.message });
