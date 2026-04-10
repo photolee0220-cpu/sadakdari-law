@@ -1,0 +1,15 @@
+{
+  "name": "사닥다리 안전법령",
+  "short_name": "사닥다리",
+  "description": "(주)사닥다리종합건설 안전 법령 검색 시스템",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a2744",
+  "theme_color": "#1a2744",
+  "orientation": "portrait",
+  "lang": "ko",
+  "icons": [
+    {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
