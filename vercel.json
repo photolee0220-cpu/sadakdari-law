@@ -1,3 +1,11 @@
 {
-  "version": 2
+  "version": 2,
+  "routes": [
+    { "src": "/api/law", "dest": "/api/law.js" },
+    { "src": "/api/analyze", "dest": "/api/analyze.js" },
+    { "src": "/api/risk", "dest": "/api/risk.js" },
+    { "src": "/api/sites", "dest": "/api/sites.js" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/admin.html", "dest": "/admin.html" }
+  ]
 }
