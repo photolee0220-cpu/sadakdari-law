@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>사닥다리ON · 관리자</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2744;--navy2:#243460;--gold:#c8a84b;--gold2:#e0c070;--bg:#f4f2ed;--g1:#f0ede6;--g2:#ddd8cc;--g3:#9a9080;--g4:#5a5248;--red:#c0392b;--green:#27ae60;--r:10px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:15px;min-height:100vh;}
+
+/* 헤더 */
+header{background:var(--navy);padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(26,39,68,.4);}
+.hd-left{display:flex;align-items:center;gap:10px;}
+.hd-title{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--gold2);}
+.hd-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+.hd-back{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none;padding:6px 12px;border:1px solid rgba(255,255,255,.15);border-radius:6px;}
+.gl{height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent);}
+
+/* 로그인 화면 */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 63px);padding:20px;}
+.login-box{background:#fff;border:1px solid var(--g2);border-radius:14px;padding:32px 28px;width:100%;max-width:360px;text-align:center;}
+.login-icon{font-size:40px;margin-bottom:12px;}
+.login-title{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--g3);margin-bottom:24px;}
+.login-input{width:100%;padding:13px 14px;border:1px solid var(--g2);border-radius:8px;font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--g4);outline:none;margin-bottom:10px;text-align:center;letter-spacing:3px;}
+.login-input:focus{border-color:var(--navy);}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy),var(--navy2));border:none;border-radius:8px;color:var(--gold2);font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+.login-err{color:var(--red);font-size:13px;margin-top:8px;}
+
+/* 어드민 메인 */
+#admin-screen{display:none;padding:20px;padding-bottom:40px;max-width:800px;margin:0 auto;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.admin-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--navy);}
+.admin-logout{padding:7px 14px;border:1px solid var(--g2);border-radius:6px;background:#fff;font-size:13px;color:var(--g4);cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+
+/* 현장 추가 폼 */
+.add-section{background:#fff;border:1px solid var(--g2);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.section-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-size:11px;font-weight:700;color:var(--g3);text-transform:uppercase;letter-spacing:.5px;}
+.form-field input,.form-field select{padding:10px 12px;border:1px solid var(--g2);border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--g4);outline:none;}
+.form-field input:focus{border-color:var(--navy);}
+.add-btn{margin-top:14px;width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:8px;color:var(--navy);font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+
+/* 현장 목록 */
+.sites-section{background:#fff;border:1px solid var(--g2);border-radius:var(--r);overflow:hidden;}
+.sites-header{padding:16px 20px;border-bottom:1px solid var(--g1);display:flex;align-items:center;justify-content:space-between;}
+.sites-count{font-size:13px;color:var(--g3);}
+.site-item{padding:14px 20px;border-bottom:1px solid var(--g1);display:flex;align-items:flex-start;gap:12px;}
+.site-item:last-child{border-bottom:none;}
+.site-info{flex:1;}
+.site-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.site-meta{font-size:12px;color:var(--g3);display:flex;gap:10px;flex-wrap:wrap;}
+.site-status{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+.ss-active{background:rgba(39,174,96,.12);color:var(--green);}
+.ss-done{background:var(--g1);color:var(--g3);}
+.site-btns{display:flex;gap:6px;flex-shrink:0;}
+.site-btn{padding:6px 12px;border:1px solid var(--g2);border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:#fff;}
+.site-btn-del{color:var(--red);border-color:rgba(192,57,43,.2);}
+.site-btn-edit{color:var(--navy);}
+
+/* 편집 모달 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:420px;}
+.modal-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:16px;}
+.modal-btns{display:flex;gap:8px;margin-top:16px;}
+.modal-btn{flex:1;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+.mb-save{background:var(--navy);color:var(--gold2);}
+.mb-cancel{background:var(--g1);color:var(--g4);}
+
+.empty-state{padding:40px;text-align:center;color:var(--g3);font-size:14px;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--gold2);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:300;display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-left">
+    <div>
+      <div class="hd-title">🔐 사닥다리ON 관리자</div>
+      <div class="hd-sub">현장 관리 · 위험성평가 설정</div>
+    </div>
+  </div>
+  <a href="/" class="hd-back">← 앱으로</a>
+</header>
+<div class="gl"></div>
+
+<!-- 로그인 화면 -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">관리자 로그인</div>
+    <div class="login-sub">사닥다리ON 관리자 전용 페이지입니다</div>
+    <input type="password" class="login-input" id="pw-input" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- 어드민 화면 -->
+<div id="admin-screen">
+  <div class="admin-header">
+    <div class="admin-title">🏗️ 현장 관리</div>
+    <button class="admin-logout" onclick="doLogout()">로그아웃</button>
+  </div>
+
+  <!-- 현장 추가 -->
+  <div class="add-section">
+    <div class="section-title">➕ 현장 추가</div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>현장명 *</label>
+        <input type="text" id="add-name" placeholder="예: OO교회 신축공사 현장">
+      </div>
+      <div class="form-field">
+        <label>수급인</label>
+        <input type="text" id="add-suguin" placeholder="수급인명">
+      </div>
+      <div class="form-field">
+        <label>상태</label>
+        <select id="add-status">
+          <option value="active">🟢 진행중</option>
+          <option value="done">⚫ 완료</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>공사 시작</label>
+        <input type="month" id="add-start">
+      </div>
+      <div class="form-field">
+        <label>공사 종료 (예정)</label>
+        <input type="month" id="add-end">
+      </div>
+    </div>
+    <button class="add-btn" onclick="addSite()">➕ 현장 추가하기</button>
+  </div>
+
+  <!-- 현장 목록 -->
+  <div class="sites-section">
+    <div class="sites-header">
+      <div class="section-title" style="margin:0">📋 등록된 현장 목록</div>
+      <div class="sites-count" id="sites-count">로딩 중...</div>
+    </div>
+    <div id="sites-list">
+      <div class="empty-state">현장 목록을 불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 편집 모달 -->
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ 현장 정보 수정</div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>현장명</label>
+        <input type="text" id="edit-name">
+      </div>
+      <div class="form-field">
+        <label>수급인</label>
+        <input type="text" id="edit-suguin">
+      </div>
+      <div class="form-field">
+        <label>상태</label>
+        <select id="edit-status">
+          <option value="active">🟢 진행중</option>
+          <option value="done">⚫ 완료</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>공사 시작</label>
+        <input type="month" id="edit-start">
+      </div>
+      <div class="form-field">
+        <label>공사 종료</label>
+        <input type="month" id="edit-end">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn mb-cancel" onclick="closeModal()">취소</button>
+      <button class="modal-btn mb-save" onclick="saveEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var IS_LOGGED = false;
+var ALL_SITES = [];
+var EDIT_ID = null;
+var SESSION_PW = '';
+
+function doLogin() {
+  var pw = document.getElementById('pw-input').value;
+  if(!pw) { document.getElementById('login-err').textContent = '비밀번호를 입력해주세요'; return; }
+  
+  fetch('/api/sites', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'login', password:pw})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d.success) {
+      IS_LOGGED = true;
+      SESSION_PW = pw;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      loadAllSites();
+    } else {
+      document.getElementById('login-err').textContent = d.error || '비밀번호가 틀렸습니다';
+    }
+  })
+  .catch(function(){
+    // API 없는 경우 기본 비번으로 로컬 테스트
+    if(pw === 'sadakdari2024' || pw === 'admin') {
+      IS_LOGGED = true;
+      SESSION_PW = pw;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      loadAllSitesLocal();
+    } else {
+      document.getElementById('login-err').textContent = '비밀번호가 틀렸습니다';
+    }
+  });
+}
+
+function doLogout() {
+  IS_LOGGED = false;
+  SESSION_PW = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+}
+
+function loadAllSites() {
+  fetch('/api/sites', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'list', password:SESSION_PW})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d.success) { ALL_SITES = d.sites; renderSites(); }
+  })
+  .catch(function(){ loadAllSitesLocal(); });
+}
+
+function loadAllSitesLocal() {
+  // 로컬 스토리지 기반 폴백
+  try {
+    var saved = localStorage.getItem('sadakdari_sites');
+    ALL_SITES = saved ? JSON.parse(saved) : getDefaultSites();
+  } catch(e) {
+    ALL_SITES = getDefaultSites();
+  }
+  renderSites();
+}
+
+function saveLocal() {
+  try { localStorage.setItem('sadakdari_sites', JSON.stringify(ALL_SITES)); } catch(e) {}
+}
+
+function getDefaultSites() {
+  return [
+    {id:'1', name:'사랑과진리교회 신축현장', suguin:'바른탑종합건설', startDate:'2023-10', endDate:'2025-03', status:'active'},
+    {id:'2', name:'샘플현장 (테스트용)', suguin:'(주)사닥다리종합건설', startDate:'2024-01', endDate:'2025-12', status:'active'}
+  ];
+}
+
+function renderSites() {
+  var list = document.getElementById('sites-list');
+  var count = document.getElementById('sites-count');
+  var active = ALL_SITES.filter(function(s){ return s.status !== 'deleted'; });
+  count.textContent = '총 '+active.length+'개 현장';
+  
+  if(!active.length) {
+    list.innerHTML = '<div class="empty-state">등록된 현장이 없습니다.<br>위 폼에서 현장을 추가해주세요.</div>';
+    return;
+  }
+
+  var html = '';
+  active.forEach(function(site){
+    var isActive = site.status === 'active';
+    html += '<div class="site-item">';
+    html += '<div class="site-info">';
+    html += '<div class="site-name">'+site.name+'</div>';
+    html += '<div class="site-meta">';
+    html += '<span class="site-status '+(isActive?'ss-active':'ss-done')+'">'+(isActive?'🟢 진행중':'⚫ 완료')+'</span>';
+    if(site.suguin) html += '<span>수급인: '+site.suguin+'</span>';
+    if(site.startDate) html += '<span>'+site.startDate+(site.endDate?' ~ '+site.endDate:'')+'</span>';
+    html += '</div></div>';
+    html += '<div class="site-btns">';
+    html += '<button class="site-btn site-btn-edit" onclick="openEdit(\''+site.id+'\')">수정</button>';
+    html += '<button class="site-btn site-btn-del" onclick="deleteSite(\''+site.id+'\')">삭제</button>';
+    html += '</div></div>';
+  });
+  list.innerHTML = html;
+}
+
+function addSite() {
+  var name = document.getElementById('add-name').value.trim();
+  if(!name) { alert('현장명을 입력해주세요'); return; }
+  
+  var newSite = {
+    id: String(Date.now()),
+    name: name,
+    suguin: document.getElementById('add-suguin').value.trim(),
+    startDate: document.getElementById('add-start').value,
+    endDate: document.getElementById('add-end').value,
+    status: document.getElementById('add-status').value,
+    createdAt: new Date().toISOString()
+  };
+
+  // API 시도
+  fetch('/api/sites', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'add', password:SESSION_PW, site:newSite})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d.success) { ALL_SITES = d.sites || ALL_SITES; }
+    ALL_SITES.push(newSite);
+    saveLocal();
+    renderSites();
+    clearAddForm();
+    showToast('✅ 현장이 추가되었습니다');
+  })
+  .catch(function(){
+    ALL_SITES.push(newSite);
+    saveLocal();
+    renderSites();
+    clearAddForm();
+    showToast('✅ 현장이 추가되었습니다');
+  });
+}
+
+function clearAddForm() {
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-suguin').value = '';
+  document.getElementById('add-start').value = '';
+  document.getElementById('add-end').value = '';
+  document.getElementById('add-status').value = 'active';
+}
+
+function openEdit(id) {
+  EDIT_ID = id;
+  var site = ALL_SITES.find(function(s){ return s.id === id; });
+  if(!site) return;
+  document.getElementById('edit-name').value = site.name;
+  document.getElementById('edit-suguin').value = site.suguin || '';
+  document.getElementById('edit-start').value = site.startDate || '';
+  document.getElementById('edit-end').value = site.endDate || '';
+  document.getElementById('edit-status').value = site.status || 'active';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  EDIT_ID = null;
+}
+
+function saveEdit() {
+  if(!EDIT_ID) return;
+  var idx = ALL_SITES.findIndex(function(s){ return s.id === EDIT_ID; });
+  if(idx === -1) return;
+  
+  ALL_SITES[idx].name = document.getElementById('edit-name').value.trim();
+  ALL_SITES[idx].suguin = document.getElementById('edit-suguin').value.trim();
+  ALL_SITES[idx].startDate = document.getElementById('edit-start').value;
+  ALL_SITES[idx].endDate = document.getElementById('edit-end').value;
+  ALL_SITES[idx].status = document.getElementById('edit-status').value;
+
+  saveLocal();
+  renderSites();
+  closeModal();
+  showToast('✅ 수정되었습니다');
+}
+
+function deleteSite(id) {
+  if(!confirm('이 현장을 삭제하시겠습니까?')) return;
+  var idx = ALL_SITES.findIndex(function(s){ return s.id === id; });
+  if(idx === -1) return;
+  ALL_SITES[idx].status = 'deleted';
+  saveLocal();
+  renderSites();
+  showToast('🗑️ 현장이 삭제되었습니다');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display = 'none'; }, 2500);
+}
+</script>
+</body>
+</html>
