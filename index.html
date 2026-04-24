@@ -106,6 +106,7 @@ header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px
 .risk-step-label::after{content:'';flex:1;height:1px;background:var(--g1);}
 .risk-type-btns{display:flex;gap:10px;}
 .rtype-btn{flex:1;padding:14px;border:2px solid var(--g2);border-radius:var(--r);background:#fff;cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.rtype-btn *{pointer-events:none;}
 .rtype-btn.on{border-color:var(--gold);background:rgba(200,168,75,.08);}
 .rtype-icon{font-size:22px;}
 .rtype-name{font-size:14px;font-weight:700;color:var(--navy);font-family:'Noto Sans KR',sans-serif;}
@@ -698,29 +699,9 @@ function lsSaveSites(arr) {
 }
 
 function loadSites() {
-  if (SITES_LOADED) return;
-  // 로컬 먼저
-  var local = lsGetSites();
-  if (local.length > 0) {
-    SITES = local;
-    renderSiteSelect();
-  }
-  // API도 시도
-  fetch('/api/sites')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.success && d.sites) {
-        // API 현장 + 로컬 병합 (중복 제거)
-        var merged = local.slice();
-        d.sites.forEach(function(s){
-          if (!merged.find(function(m){ return m.id === s.id; })) merged.push(s);
-        });
-        SITES = merged;
-        lsSaveSites(merged);
-        renderSiteSelect();
-      }
-    })
-    .catch(function(){});
+  // 항상 localStorage에서 최신 로드 (관리자가 추가한 현장 반영)
+  SITES = lsGetSites();
+  renderSiteSelect();
   SITES_LOADED = true;
 }
 
@@ -740,8 +721,10 @@ function renderSiteSelect() {
 
 function setRiskType(type) {
   RISK_TYPE = type;
-  document.getElementById('rtype-sussi').classList.toggle('on', type==='sussi');
-  document.getElementById('rtype-choecho').classList.toggle('on', type==='choecho');
+  var btnS = document.getElementById('rtype-sussi');
+  var btnC = document.getElementById('rtype-choecho');
+  if(btnS) { btnS.classList.toggle('on', type==='sussi'); }
+  if(btnC) { btnC.classList.toggle('on', type==='choecho'); }
   var pw = document.getElementById('r-period-wrap');
   if (pw) pw.style.display = type==='sussi' ? '' : 'none';
 }
@@ -990,7 +973,11 @@ function copyRisk() {
 }
 
 // 탭 진입시 현장 로드
-document.getElementById('tab-risk').addEventListener('click', function(){ loadSites(); });
+document.getElementById('tab-risk').addEventListener('click', function(){
+  // 탭 진입시 항상 최신 현장 목록 로드
+  SITES_LOADED = false;
+  loadSites();
+});
 
 // 날짜 기본값
 (function(){
