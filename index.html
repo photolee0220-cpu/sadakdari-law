@@ -143,6 +143,21 @@ header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px
 .rib-label{font-size:10px;color:var(--g3);font-weight:700;letter-spacing:.5px;margin-bottom:2px;}
 .rib-val{font-size:13px;color:var(--navy);font-weight:600;}
 
+
+.photo-upload-area{width:100%;min-height:80px;border:2px dashed var(--g2);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:16px;color:var(--g3);font-size:14px;background:var(--g1);transition:border-color .18s;flex-direction:column;gap:8px;}
+.photo-upload-area:hover{border-color:var(--gold);}
+.photo-upload-area.has-photo{border-style:solid;border-color:var(--navy);background:#fff;}
+.score-sel{width:52px;padding:4px;border:1px solid var(--g2);border-radius:6px;font-size:13px;font-family:'Noto Sans KR',sans-serif;text-align:center;background:#fff;cursor:pointer;}
+.bigo-input{width:100%;padding:4px 6px;border:1px solid transparent;border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g3);background:transparent;text-align:center;}
+.bigo-input:focus{border-color:var(--g2);outline:none;}
+.sign-row{display:flex;gap:8px;margin-bottom:10px;}
+.sign-box{flex:1;background:#fff;border:1px solid var(--g2);border-radius:8px;padding:12px;text-align:center;}
+.sign-label{font-size:11px;font-weight:700;color:var(--g3);margin-bottom:8px;}
+.sign-line{height:30px;border-bottom:1px solid var(--g3);color:var(--g3);font-size:11px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;}
+[contenteditable]{outline:none;cursor:text;}
+[contenteditable]:hover{background:rgba(200,168,75,.06);border-radius:3px;}
+[contenteditable]:focus{background:rgba(26,39,68,.04);border-radius:3px;}
+
 /* AI 분석 페이지 */
 .ai-page{padding:16px;padding-bottom:80px;}
 .ai-header{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:12px;padding:20px;margin-bottom:16px;}
@@ -253,13 +268,12 @@ footer{background:var(--navy);padding:12px 16px;text-align:center;}
 <!-- 위험성평가 페이지 -->
 <div class="page" id="page-risk">
   <div class="risk-page">
-    <!-- 헤더 -->
     <div class="risk-hero">
       <h2>📋 위험성평가 자동생성</h2>
-      <p>공종과 현장 정보를 입력하면 AI가 위험성평가표를 자동으로 작성합니다</p>
+      <p>공종·현장정보 입력 → AI 자동 작성 → PDF 출력</p>
     </div>
 
-    <!-- STEP 1: 평가유형 -->
+    <!-- STEP1: 평가유형 -->
     <div class="risk-section">
       <div class="risk-step-label">STEP 1 · 평가 유형</div>
       <div class="risk-type-btns">
@@ -276,7 +290,7 @@ footer{background:var(--navy);padding:12px 16px;text-align:center;}
       </div>
     </div>
 
-    <!-- STEP 2: 기본정보 -->
+    <!-- STEP2: 기본정보 -->
     <div class="risk-section">
       <div class="risk-step-label">STEP 2 · 기본 정보</div>
       <div class="risk-form">
@@ -286,22 +300,26 @@ footer{background:var(--navy);padding:12px 16px;text-align:center;}
             <option value="">현장을 선택하세요</option>
           </select>
         </div>
-        <div class="risk-field" id="r-suguin-wrap">
+        <div class="risk-field">
           <label>수급인</label>
-          <input type="text" id="r-suguin" placeholder="수급인명" readonly>
+          <input type="text" id="r-suguin" placeholder="자동입력" readonly>
         </div>
         <div class="risk-field">
-          <label>작성일</label>
-          <input type="text" id="r-date" readonly>
+          <label>작성일 <span class="req">*</span></label>
+          <input type="date" id="r-date">
         </div>
         <div class="risk-field" id="r-period-wrap">
           <label>평가기간</label>
           <input type="text" id="r-period" placeholder="예: 25.04.23 ~ 25.05.06">
         </div>
+        <div class="risk-field">
+          <label>제출일</label>
+          <input type="date" id="r-submit-date">
+        </div>
       </div>
     </div>
 
-    <!-- STEP 3: 공종 선택 -->
+    <!-- STEP3: 공종 -->
     <div class="risk-section">
       <div class="risk-step-label">STEP 3 · 공종 선택</div>
       <select class="risk-select" id="r-gongchong" onchange="onGongchongChange()">
@@ -341,18 +359,32 @@ footer{background:var(--navy);padding:12px 16px;text-align:center;}
         </optgroup>
       </select>
       <input type="text" class="risk-input" id="r-gongchong-direct" placeholder="공종명 직접 입력" style="display:none;margin-top:8px;">
-
       <div class="risk-field" style="margin-top:12px;">
         <label>단위작업</label>
-        <input type="text" class="risk-input" id="r-danwi" placeholder="예: 기둥·벽체 타설작업, 비계 설치 및 해체">
+        <input type="text" class="risk-input" id="r-danwi" placeholder="예: 기둥·벽체 타설작업">
       </div>
     </div>
 
-    <!-- STEP 4: 현장 특이사항 -->
+    <!-- STEP4: 특이사항 + 사진 -->
     <div class="risk-section">
-      <div class="risk-step-label">STEP 4 · 현장 특이사항</div>
-      <textarea class="risk-textarea" id="r-teuki" placeholder="예: 우기철 비계해체 작업, 지하 2층 굴착 중, 인접 도로 차량 통행 많음"></textarea>
-      <div class="risk-check-label">위험 포인트 (중복 선택 가능)</div>
+      <div class="risk-step-label">STEP 4 · 현장 특이사항 &amp; 사진</div>
+      <div class="risk-field" style="margin-bottom:10px;">
+        <label>현장 특이사항</label>
+        <textarea class="risk-textarea" id="r-teuki" placeholder="예: 우기철 비계해체 작업, 지하 2층 굴착 중..."></textarea>
+      </div>
+      <div class="risk-field" style="margin-bottom:12px;">
+        <label>📷 현장 사진 (선택)</label>
+        <div class="photo-upload-area" id="photo-area" onclick="document.getElementById('r-photo').click()">
+          <span id="photo-placeholder">📷 사진을 클릭하여 업로드</span>
+          <img id="photo-preview" style="display:none;max-width:100%;max-height:180px;border-radius:6px;">
+        </div>
+        <input type="file" id="r-photo" accept="image/*" style="display:none;" onchange="onPhotoChange()">
+      </div>
+      <div class="risk-field" id="photo-desc-wrap" style="display:none;">
+        <label>✍️ 문제 내용 입력 <span class="req">*</span></label>
+        <textarea class="risk-textarea" id="r-photo-desc" placeholder="예: 비계 상부 작업자 안전벨트 미착용, 발판 고정 불량 2곳, 안전난간 미설치"></textarea>
+      </div>
+      <div class="risk-check-label">위험 포인트</div>
       <div class="risk-checks">
         <label class="rchk"><input type="checkbox" value="고소작업(2m이상)"> <span>🔺 고소작업</span></label>
         <label class="rchk"><input type="checkbox" value="밀폐공간작업"> <span>🚪 밀폐공간</span></label>
@@ -363,12 +395,9 @@ footer{background:var(--navy);padding:12px 16px;text-align:center;}
       </div>
     </div>
 
-    <!-- 생성 버튼 -->
     <button class="risk-gen-btn" id="risk-gen-btn" onclick="generateRisk()">
       🤖 AI 위험성평가 자동생성
     </button>
-
-    <!-- 결과 영역 -->
     <div id="risk-result-area"></div>
   </div>
 </div>
@@ -657,194 +686,292 @@ function doAnalyze() {
 var RISK_TYPE = 'sussi';
 var SITES = [];
 var RISK_ITEMS = [];
+var PHOTO_BASE64 = null;
+var SITES_LOADED = false;
 
-// 현장 목록 로드
+// localStorage 기반 현장 저장 (API 보조)
+function lsGetSites() {
+  try { return JSON.parse(localStorage.getItem('sd_sites') || '[]'); } catch(e) { return []; }
+}
+function lsSaveSites(arr) {
+  try { localStorage.setItem('sd_sites', JSON.stringify(arr)); } catch(e) {}
+}
+
 function loadSites() {
+  if (SITES_LOADED) return;
+  // 로컬 먼저
+  var local = lsGetSites();
+  if (local.length > 0) {
+    SITES = local;
+    renderSiteSelect();
+  }
+  // API도 시도
   fetch('/api/sites')
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if(d.success) {
-        SITES = d.sites;
-        var sel = document.getElementById('r-site');
-        sel.innerHTML = '<option value="">현장을 선택하세요</option>';
+      if (d.success && d.sites) {
+        // API 현장 + 로컬 병합 (중복 제거)
+        var merged = local.slice();
         d.sites.forEach(function(s){
-          sel.innerHTML += '<option value="'+s.id+'" data-suguin="'+s.suguin+'">'+s.name+'</option>';
+          if (!merged.find(function(m){ return m.id === s.id; })) merged.push(s);
         });
+        SITES = merged;
+        lsSaveSites(merged);
+        renderSiteSelect();
       }
     })
-    .catch(function(){ 
-      // API 없을 때 기본 현장 사용
-      var sel = document.getElementById('r-site');
-      sel.innerHTML = '<option value="">현장을 선택하세요</option><option value="sample" data-suguin="(주)사닥다리종합건설">샘플현장 (테스트용)</option>';
-    });
+    .catch(function(){});
+  SITES_LOADED = true;
+}
+
+function renderSiteSelect() {
+  var sel = document.getElementById('r-site');
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">현장을 선택하세요</option>';
+  SITES.filter(function(s){ return s.status === 'active'; }).forEach(function(s){
+    var opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.name;
+    opt.dataset.suguin = s.suguin || '';
+    sel.appendChild(opt);
+  });
+  if (cur) sel.value = cur;
 }
 
 function setRiskType(type) {
   RISK_TYPE = type;
   document.getElementById('rtype-sussi').classList.toggle('on', type==='sussi');
   document.getElementById('rtype-choecho').classList.toggle('on', type==='choecho');
-  document.getElementById('r-period-wrap').style.display = type==='sussi' ? '' : 'none';
+  var pw = document.getElementById('r-period-wrap');
+  if (pw) pw.style.display = type==='sussi' ? '' : 'none';
 }
 
 function onSiteChange() {
   var sel = document.getElementById('r-site');
   var opt = sel.options[sel.selectedIndex];
-  var suguin = opt ? (opt.dataset.suguin || '') : '';
-  document.getElementById('r-suguin').value = suguin;
+  document.getElementById('r-suguin').value = opt ? (opt.dataset.suguin || '') : '';
 }
 
 function onGongchongChange() {
   var val = document.getElementById('r-gongchong').value;
   var direct = document.getElementById('r-gongchong-direct');
   direct.style.display = val === 'direct' ? '' : 'none';
-  if(val !== 'direct') direct.value = '';
+}
+
+function onPhotoChange() {
+  var file = document.getElementById('r-photo').files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    PHOTO_BASE64 = e.target.result.split(',')[1];
+    var prev = document.getElementById('photo-preview');
+    var ph = document.getElementById('photo-placeholder');
+    var area = document.getElementById('photo-area');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    ph.style.display = 'none';
+    area.classList.add('has-photo');
+    document.getElementById('photo-desc-wrap').style.display = '';
+  };
+  reader.readAsDataURL(file);
 }
 
 function getRiskPoints() {
   var pts = [];
-  document.querySelectorAll('.risk-checks input[type=checkbox]:checked').forEach(function(cb){
-    pts.push(cb.value);
-  });
+  document.querySelectorAll('.risk-checks input:checked').forEach(function(cb){ pts.push(cb.value); });
   return pts;
 }
 
-function getRiskBadgeClass(score) {
-  if(score >= 9) return 'rb9';
-  if(score >= 6) return 'rb6';
-  if(score >= 4) return 'rb4';
-  if(score >= 3) return 'rb3';
-  return 'rb2';
+function getGongchong() {
+  var val = document.getElementById('r-gongchong').value;
+  if (val === 'direct') return document.getElementById('r-gongchong-direct').value.trim();
+  return val;
 }
 
-function getRiskLabel(score) {
-  if(score >= 9) return '🔴 허용불가';
-  if(score >= 6) return '🟠 중대위험';
-  if(score >= 4) return '🟡 상당위험';
-  if(score >= 3) return '🟡 경미위험';
-  return '🟢 미미위험';
+function getSiteName() {
+  var sel = document.getElementById('r-site');
+  return sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
 }
 
-function getTodayStr() {
-  var d = new Date();
-  return d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate());
+function getRiskColor(s) {
+  if (s >= 9) return '#e74c3c';
+  if (s >= 6) return '#e67e22';
+  if (s >= 3) return '#f39c12';
+  return '#27ae60';
+}
+function getRiskLabel(s) {
+  if (s >= 9) return '허용불가';
+  if (s >= 6) return '중대위험';
+  if (s >= 4) return '상당위험';
+  if (s >= 3) return '경미위험';
+  return '미미위험';
+}
+function getRiskEmoji(s) {
+  if (s >= 9) return '🔴';
+  if (s >= 6) return '🟠';
+  if (s >= 3) return '🟡';
+  return '🟢';
 }
 
 function generateRisk() {
-  var siteSel = document.getElementById('r-site');
-  var siteName = siteSel.options[siteSel.selectedIndex] ? siteSel.options[siteSel.selectedIndex].text : '';
-  var gongchong = document.getElementById('r-gongchong').value;
-  if(gongchong === 'direct') gongchong = document.getElementById('r-gongchong-direct').value;
-  var danwi = document.getElementById('r-danwi').value;
-  var teuki = document.getElementById('r-teuki').value;
-  var riskPoints = getRiskPoints();
-
-  if(!siteSel.value) { alert('현장명을 선택해주세요'); return; }
-  if(!gongchong) { alert('공종을 선택해주세요'); return; }
+  var siteId = document.getElementById('r-site').value;
+  var gongchong = getGongchong();
+  if (!siteId) { alert('현장명을 선택해주세요'); return; }
+  if (!gongchong) { alert('공종을 선택해주세요'); return; }
+  if (PHOTO_BASE64 && !document.getElementById('r-photo-desc').value.trim()) {
+    alert('사진 업로드 시 문제 내용을 입력해주세요'); return;
+  }
 
   var btn = document.getElementById('risk-gen-btn');
   var resultArea = document.getElementById('risk-result-area');
-  btn.disabled = true;
-  btn.textContent = '⏳ AI 생성 중...';
+  btn.disabled = true; btn.textContent = '⏳ AI 생성 중...';
   resultArea.innerHTML = '<div style="text-align:center;padding:30px;color:var(--g3);font-size:14px;">🤖 AI가 위험성평가를 작성하고 있습니다...<br><br><div class="sp" style="margin:0 auto;"></div></div>';
 
   fetch('/api/risk', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
       type: RISK_TYPE,
       gongchong: gongchong,
-      danwiJakup: danwi,
-      teukiSahang: teuki,
-      riskPoints: riskPoints
+      danwiJakup: document.getElementById('r-danwi').value,
+      teukiSahang: document.getElementById('r-teuki').value,
+      riskPoints: getRiskPoints(),
+      photoDesc: document.getElementById('r-photo-desc') ? document.getElementById('r-photo-desc').value : ''
     })
   })
   .then(function(r){ return r.json(); })
   .then(function(d){
-    btn.disabled = false;
-    btn.textContent = '🤖 AI 위험성평가 자동생성';
-    if(!d.success) { resultArea.innerHTML='<div class="err">오류: '+(d.error||'생성 실패')+'</div>'; return; }
+    btn.disabled = false; btn.textContent = '🤖 AI 위험성평가 자동생성';
+    if (!d.success) { resultArea.innerHTML='<div class="err">오류: '+(d.error||'생성 실패')+'</div>'; return; }
     RISK_ITEMS = d.result.items;
-    renderRiskResult(siteName, gongchong, danwi);
+    renderRiskResult();
   })
   .catch(function(e){
-    btn.disabled = false;
-    btn.textContent = '🤖 AI 위험성평가 자동생성';
+    btn.disabled = false; btn.textContent = '🤖 AI 위험성평가 자동생성';
     resultArea.innerHTML = '<div class="err">오류: '+e.message+'</div>';
   });
 }
 
-function renderRiskResult(siteName, gongchong, danwi) {
+function renderRiskResult() {
   var items = RISK_ITEMS;
   var resultArea = document.getElementById('risk-result-area');
+  var siteName = getSiteName();
   var suguin = document.getElementById('r-suguin').value;
+  var dateVal = document.getElementById('r-date').value;
+  var submitDate = document.getElementById('r-submit-date').value;
   var period = document.getElementById('r-period').value;
-  var today = getTodayStr();
+  var gongchong = getGongchong();
+  var danwi = document.getElementById('r-danwi').value;
+  var isSussi = RISK_TYPE === 'sussi';
 
-  // 위험성 집계
+  // 집계
   var cnt = {r:0,o:0,y:0,g:0};
-  items.forEach(function(item){
-    var s = item.wiheomsung;
-    if(s>=9) cnt.r++;
-    else if(s>=6) cnt.o++;
-    else if(s>=4) cnt.y++;
-    else cnt.g++;
+  items.forEach(function(it){
+    var s = it.wiheomsung;
+    if(s>=9) cnt.r++; else if(s>=6) cnt.o++; else if(s>=3) cnt.y++; else cnt.g++;
   });
 
-  var isSussi = RISK_TYPE === 'sussi';
   var html = '';
 
-  // 기본정보 박스
-  html += '<div class="risk-info-row">';
-  html += '<div class="risk-info-box"><div class="rib-label">현장명</div><div class="rib-val">'+siteName+'</div></div>';
-  html += '<div class="risk-info-box"><div class="rib-label">수급인</div><div class="rib-val">'+(suguin||'-')+'</div></div>';
-  html += '<div class="risk-info-box"><div class="rib-label">공종</div><div class="rib-val">'+gongchong+'</div></div>';
-  html += '<div class="risk-info-box"><div class="rib-label">'+(isSussi?'평가기간':'작성일')+'</div><div class="rib-val">'+(isSussi?(period||today):today)+'</div></div>';
-  html += '</div>';
-
   // 요약 배너
-  html += '<div class="risk-summary-bar">';
-  html += '<div class="rsb-title">⚠️ 총 '+items.length+'개 위험요인 분석 결과</div>';
+  html += '<div class="risk-summary-bar"><div class="rsb-title">⚠️ 총 '+items.length+'개 위험요인</div>';
   if(cnt.r) html += '<span class="rsb-badge rsb-r">🔴 허용불가 '+cnt.r+'</span>';
   if(cnt.o) html += '<span class="rsb-badge rsb-o">🟠 중대 '+cnt.o+'</span>';
   if(cnt.y) html += '<span class="rsb-badge rsb-y">🟡 경미/상당 '+cnt.y+'</span>';
   if(cnt.g) html += '<span class="rsb-badge rsb-g">🟢 미미 '+cnt.g+'</span>';
   html += '</div>';
 
-  // 테이블
-  html += '<div class="risk-table-wrap"><table class="risk-table"><thead><tr>';
+  // 기본정보
+  html += '<div class="risk-info-row">';
+  html += '<div class="risk-info-box"><div class="rib-label">현장명</div><div class="rib-val">'+siteName+'</div></div>';
+  html += '<div class="risk-info-box"><div class="rib-label">수급인</div><div class="rib-val">'+(suguin||'-')+'</div></div>';
+  html += '<div class="risk-info-box"><div class="rib-label">공종</div><div class="rib-val">'+gongchong+'</div></div>';
+  html += '<div class="risk-info-box"><div class="rib-label">단위작업</div><div class="rib-val">'+(danwi||'-')+'</div></div>';
   if(isSussi) {
-    html += '<th>분류</th><th style="min-width:160px">유해위험요인</th><th>가능성</th><th>중대성</th><th>위험성</th><th style="min-width:160px">감소대책</th><th>비고</th>';
+    html += '<div class="risk-info-box"><div class="rib-label">제출일</div><div class="rib-val">'+(submitDate||dateVal||'-')+'</div></div>';
+    html += '<div class="risk-info-box"><div class="rib-label">평가기간</div><div class="rib-val">'+(period||'-')+'</div></div>';
   } else {
-    html += '<th>작업단계</th><th style="min-width:160px">유해위험요인</th><th>빈도</th><th>강도</th><th>위험성</th><th style="min-width:160px">안전대책</th><th>비고</th>';
+    html += '<div class="risk-info-box"><div class="rib-label">작성일</div><div class="rib-val">'+(dateVal||'-')+'</div></div>';
   }
-  html += '</tr></thead><tbody>';
+  html += '</div>';
+
+  // 근로자의견/승인자의견 (수시평가)
+  if(isSussi) {
+    html += '<div class="risk-section" style="margin-bottom:10px;">';
+    html += '<div class="risk-step-label">근로자의견 / 승인자의견</div>';
+    html += '<div class="risk-form">';
+    html += '<div class="risk-field"><label>근로자의견</label><input type="text" id="res-worker-opinion" class="risk-input" placeholder="근로자 의견 입력"></div>';
+    html += '<div class="risk-field"><label>승인자의견</label><input type="text" id="res-approval-opinion" class="risk-input" placeholder="승인자 의견 입력"></div>';
+    html += '</div></div>';
+  }
+
+  // 결과 테이블 (수정 가능)
+  html += '<div class="risk-table-wrap"><table class="risk-table"><thead><tr>';
+  html += '<th>분류</th><th style="min-width:150px">유해위험요인</th>';
+  html += '<th>가능성<br><small style="font-weight:400;opacity:.7">1~3</small></th>';
+  html += '<th>중대성<br><small style="font-weight:400;opacity:.7">1~3</small></th>';
+  html += '<th>위험성</th>';
+  html += '<th style="min-width:150px">'+(isSussi?'감소대책':'안전대책')+'</th>';
+  html += '<th>비고</th></tr></thead><tbody>';
 
   items.forEach(function(item, i){
-    var score = item.wiheomsung;
-    var bClass = getRiskBadgeClass(score);
-    var bigo = item.bigo || '';
-    if(score>=9 && !bigo) bigo='허용불가위험';
-    else if(score>=6 && !bigo) bigo='중대한위험';
-    html += '<tr>';
+    var s = item.wiheomsung;
+    var col = getRiskColor(s);
+    var lbl = getRiskLabel(s);
+    var em = getRiskEmoji(s);
+    var bigo = s>=9?'허용불가위험':s>=6?'중대한위험':'';
+    html += '<tr id="row-'+i+'">';
     html += '<td class="tdleft"><strong>'+item.bunryu+'</strong></td>';
-    html += '<td class="tdleft">'+item.yuhaeWihomYoin+'</td>';
-    html += '<td>'+item.ganeungsung+'</td>';
-    html += '<td>'+item.jungdaesung+'</td>';
-    html += '<td><span class="risk-badge '+bClass+'">'+score+'<br>'+getRiskLabel(score).replace('🔴 ','').replace('🟠 ','').replace('🟡 ','').replace('🟢 ','')+'</span></td>';
-    html += '<td class="tdleft">'+item.gamsoTaechaek+'</td>';
-    html += '<td style="color:'+(score>=6?'var(--rr)':'var(--g3)')+'">'+bigo+'</td>';
+    html += '<td class="tdleft" contenteditable="true" oninput="updateItem('+i+','yuhaeWihomYoin',this.textContent)">'+item.yuhaeWihomYoin+'</td>';
+    // 가능성 드롭다운
+    html += '<td><select class="score-sel" onchange="updateScore('+i+','ganeungsung',this.value)">';
+    [1,2,3].forEach(function(v){ html += '<option value="'+v+'"'+(item.ganeungsung==v?' selected':'')+'>'+v+'</option>'; });
+    html += '</select></td>';
+    // 중대성 드롭다운
+    html += '<td><select class="score-sel" onchange="updateScore('+i+','jungdaesung',this.value)">';
+    [1,2,3].forEach(function(v){ html += '<option value="'+v+'"'+(item.jungdaesung==v?' selected':'')+'>'+v+'</option>'; });
+    html += '</select></td>';
+    // 위험성 점수 (자동)
+    html += '<td id="risk-score-'+i+'"><span class="risk-badge" style="background:'+col+';color:'+(s>=4&&s<6?'#333':'#fff')+'">'+em+'<br>'+s+'<br><small>'+lbl+'</small></span></td>';
+    html += '<td class="tdleft" contenteditable="true" oninput="updateItem('+i+','gamsoTaechaek',this.textContent)">'+item.gamsoTaechaek+'</td>';
+    html += '<td><input type="text" class="bigo-input" value="'+bigo+'" onchange="updateItem('+i+','bigo',this.value)" style="color:'+(s>=6?'var(--rr)':'var(--g3)')+'"></td>';
     html += '</tr>';
   });
   html += '</tbody></table></div>';
 
-  // 액션 버튼
+  // 서명란
+  html += '<div class="sign-row">';
+  html += '<div class="sign-box"><div class="sign-label">작성자</div><div class="sign-line">(서명)</div></div>';
+  html += '<div class="sign-box"><div class="sign-label">검토자</div><div class="sign-line">(서명)</div></div>';
+  html += '<div class="sign-box"><div class="sign-label">승인자</div><div class="sign-line">(서명)</div></div>';
+  html += '</div>';
+
+  // 액션버튼
   html += '<div class="risk-actions">';
-  html += '<button class="risk-act-btn rab-print" onclick="printRisk()">🖨️ 인쇄</button>';
-  html += '<button class="risk-act-btn rab-copy" onclick="copyRisk()">📋 복사</button>';
+  html += '<button class="risk-act-btn rab-print" onclick="printRisk()">🖨️ 인쇄/PDF</button>';
+  html += '<button class="risk-act-btn rab-copy" onclick="copyRisk()">📋 텍스트복사</button>';
   html += '<button class="risk-act-btn rab-regen" onclick="generateRisk()">🔄 재생성</button>';
   html += '</div>';
 
   resultArea.innerHTML = html;
+}
+
+function updateItem(i, field, val) {
+  if (RISK_ITEMS[i]) RISK_ITEMS[i][field] = val.trim();
+}
+
+function updateScore(i, field, val) {
+  if (!RISK_ITEMS[i]) return;
+  RISK_ITEMS[i][field] = parseInt(val);
+  RISK_ITEMS[i].wiheomsung = RISK_ITEMS[i].ganeungsung * RISK_ITEMS[i].jungdaesung;
+  var s = RISK_ITEMS[i].wiheomsung;
+  var col = getRiskColor(s);
+  var lbl = getRiskLabel(s);
+  var em = getRiskEmoji(s);
+  var cell = document.getElementById('risk-score-'+i);
+  if (cell) {
+    cell.innerHTML = '<span class="risk-badge" style="background:'+col+';color:'+(s>=4&&s<6?'#333':'#fff')+'">'+em+'<br>'+s+'<br><small>'+lbl+'</small></span>';
+  }
 }
 
 function printRisk() {
@@ -852,36 +979,28 @@ function printRisk() {
 }
 
 function copyRisk() {
-  var items = RISK_ITEMS;
-  var text = '위험성평가표\n';
-  text += '현장: '+document.getElementById('r-site').options[document.getElementById('r-site').selectedIndex].text+'\n';
-  text += '공종: '+(document.getElementById('r-gongchong').value==='direct'?document.getElementById('r-gongchong-direct').value:document.getElementById('r-gongchong').value)+'\n\n';
-  text += '분류\t유해위험요인\t가능성\t중대성\t위험성\t감소대책\n';
-  items.forEach(function(item){
-    text += item.bunryu+'\t'+item.yuhaeWihomYoin+'\t'+item.ganeungsung+'\t'+item.jungdaesung+'\t'+item.wiheomsung+'\t'+item.gamsoTaechaek+'\n';
+  var lines = ['위험성평가표', '현장: '+getSiteName(), '공종: '+getGongchong(), ''];
+  lines.push('분류\t유해위험요인\t가능성\t중대성\t위험성\t감소대책\t비고');
+  RISK_ITEMS.forEach(function(it){
+    lines.push([it.bunryu,it.yuhaeWihomYoin,it.ganeungsung,it.jungdaesung,it.wiheomsung,it.gamsoTaechaek,it.bigo||''].join('\t'));
   });
-  navigator.clipboard.writeText(text).then(function(){
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
     alert('클립보드에 복사되었습니다!');
-  }).catch(function(){
-    alert('복사 실패. 수동으로 선택해서 복사해주세요.');
-  });
+  }).catch(function(){ alert('수동으로 복사해주세요'); });
 }
 
-// 위험성평가 탭 진입 시 현장 목록 로드
-document.getElementById('tab-risk').addEventListener('click', function(){
-  if(SITES.length === 0) loadSites();
-});
+// 탭 진입시 현장 로드
+document.getElementById('tab-risk').addEventListener('click', function(){ loadSites(); });
 
-// 작성일 자동 입력
-document.getElementById('r-date').value = (function(){
+// 날짜 기본값
+(function(){
   var d = new Date();
-  return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0');
+  var ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  document.getElementById('r-date').value = ds;
+  document.getElementById('r-submit-date').value = ds;
 })();
 
-// 수시평가가 기본이므로 평가기간 표시
-document.getElementById('r-period-wrap').style.display = '';
 
-// ========== 관리자 페이지 JS (별도 파일로 분리 예정) ==========
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
