@@ -699,9 +699,23 @@ function lsSaveSites(arr) {
 }
 
 function loadSites() {
-  // 항상 localStorage에서 최신 로드 (관리자가 추가한 현장 반영)
-  SITES = lsGetSites();
-  renderSiteSelect();
+  // API에서 먼저 로드 (브라우저 무관하게 공유)
+  fetch('/api/sites')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success && d.sites && d.sites.length > 0) {
+        SITES = d.sites;
+        renderSiteSelect();
+      } else {
+        // API에 없으면 localStorage 폴백
+        SITES = lsGetSites();
+        renderSiteSelect();
+      }
+    })
+    .catch(function(){
+      SITES = lsGetSites();
+      renderSiteSelect();
+    });
   SITES_LOADED = true;
 }
 
