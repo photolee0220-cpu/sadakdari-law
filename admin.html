@@ -130,6 +130,17 @@ header{background:var(--navy);padding:0 20px;height:58px;display:flex;align-item
     <button class="add-btn" onclick="addSite()">➕ 현장 추가하기</button>
   </div>
 
+  <!-- Vercel 환경변수 가이드 -->
+  <div class="card" id="env-guide" style="display:none;border-color:var(--gold);">
+    <div class="card-title">⚙️ Vercel 환경변수 업데이트 필요</div>
+    <p style="font-size:13px;color:var(--g4);margin-bottom:10px;line-height:1.7;">
+      아래 JSON을 복사해서 Vercel → sadakdari-law → Settings → Environment Variables → <strong>SITES_DATA</strong> 값에 붙여넣고 저장 후 Redeploy 하세요.<br>
+      <span style="color:var(--red);font-size:12px;">※ 이 작업을 해야 모든 브라우저/기기에서 현장이 보입니다.</span>
+    </p>
+    <textarea id="env-json" style="width:100%;height:80px;padding:10px;border:1px solid var(--g2);border-radius:8px;font-size:12px;font-family:monospace;resize:vertical;" readonly></textarea>
+    <button onclick="copyEnvJson()" style="margin-top:8px;padding:10px 16px;background:var(--navy);color:var(--gold2);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📋 JSON 복사</button>
+  </div>
+
   <!-- 현장 목록 -->
   <div class="card">
     <div class="sites-header">
@@ -250,7 +261,6 @@ function addSite() {
     status: document.getElementById('add-status').value,
     createdAt: new Date().toISOString()
   };
-  // 중복 체크
   if (SITES.find(function(s){ return s.name === name && s.status !== 'deleted'; })) {
     if (!confirm('같은 이름의 현장이 있습니다. 추가하시겠습니까?')) return;
   }
@@ -258,9 +268,18 @@ function addSite() {
   lsSave();
   renderSites();
   clearAddForm();
-  showToast('✅ 현장이 추가되었습니다');
-  // API도 시도
-  fetch('/api/sites', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'add', password:PW, site:newSite}) }).catch(function(){});
+  showToast('✅ 현장 추가 완료! Vercel 환경변수 업데이트 필요');
+  // Vercel 환경변수 업데이트용 JSON 생성
+  updateEnvGuide();
+}
+
+function updateEnvGuide() {
+  var activeSites = SITES.filter(function(s){ return s.status !== 'deleted'; });
+  var json = JSON.stringify(activeSites);
+  var guide = document.getElementById('env-guide');
+  var box = document.getElementById('env-json');
+  if (guide) guide.style.display = '';
+  if (box) box.value = json;
 }
 
 function clearAddForm() {
@@ -295,6 +314,7 @@ function saveEdit() {
   renderSites();
   closeModal();
   showToast('✅ 수정되었습니다');
+  updateEnvGuide();
   fetch('/api/sites', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'update', password:PW, id:EDIT_ID, site:SITES[idx]}) }).catch(function(){});
 }
 
@@ -306,7 +326,20 @@ function deleteSite(id) {
   lsSave();
   renderSites();
   showToast('🗑️ 현장이 삭제되었습니다');
+  updateEnvGuide();
   fetch('/api/sites', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'delete', password:PW, id:id}) }).catch(function(){});
+}
+
+function copyEnvJson() {
+  var box = document.getElementById('env-json');
+  if (!box) return;
+  navigator.clipboard.writeText(box.value).then(function(){
+    showToast('📋 복사됨! Vercel 환경변수에 붙여넣으세요');
+  }).catch(function(){
+    box.select();
+    document.execCommand('copy');
+    showToast('📋 복사됨!');
+  });
 }
 
 function showToast(msg) {
